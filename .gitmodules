@@ -8,7 +8,3 @@
 	path = Extensions/Hub-Training-Module
 	url = git@github.com:Innoactive/Hub-Training-Module.git
 	branch = feature/Extract-confetti-and-audio-hint-TRNG-244
-[submodule "Assets/Extensions/Hub-Training-Module"]
-	path = Assets/Extensions/Hub-Training-Module
-	url = git@github.com:Innoactive/Hub-Training-Module.git
-	branch = feature/Extract-confetti-and-audio-hint-TRNG-244
