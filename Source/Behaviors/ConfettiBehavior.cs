@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using VRTK;
 
-namespace Innoactive.Hub.Training
+namespace Innoactive.Hub.Training.Template
 {
     /// <summary>
     /// This behavior causes confetti to rain.

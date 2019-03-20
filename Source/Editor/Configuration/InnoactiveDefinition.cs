@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using Innoactive.Hub.Training.Editors.Configuration;
 using UnityEngine;
 
-namespace Innoactive.Hub.Training.Editors.Configuration
+namespace Innoactive.Hub.Training.Template.Editors.Configuration
 {
     public class InnoactiveDefinition : DefaultDefinition
     {
@@ -36,7 +36,7 @@ namespace Innoactive.Hub.Training.Editors.Configuration
             public override IBehavior GetNewItem()
             {
                 return new ActivationBlockingBehavior(
-                    new Training.BehaviorSequence(true,
+                    new BehaviorSequence(true,
                         new List<IBehavior>
                         {
                             new ActivationBlockingBehavior(new DelayBehavior(5f) {Name = "Wait for"}, false),
@@ -44,7 +44,6 @@ namespace Innoactive.Hub.Training.Editors.Configuration
                         }) {Name = "Audio Hint"}, false);
             }
         }
-
 
         private readonly IList<Menu.Option<IBehavior>> defaultBehaviors;
 
