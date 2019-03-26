@@ -3,12 +3,13 @@
 using System;
 using System.Collections;
 using Innoactive.Hub.Training;
+using Innoactive.Hub.Training.Template;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Hub.Unity.Tests.Training.Behaviors
+namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 {
     public class ConfettiBehaviorTests
     {
