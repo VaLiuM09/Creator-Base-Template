@@ -572,4 +572,14 @@ entryDrawer.Draw(entryRect, entry, entryValueChangedCallback, label);
 
 # Custom overlay
 
-To make your own controls define your own `Spectator Cam Prefab Overload` in [`[HUB-PLAYER-SETUP-MANAGER]`](http://docs.hub.innoactive.de/api/Innoactive.Hub.PlayerSetup.PlayerSetupManager.html) scene object.
+To make your own controls define your own `Spectator Cam Prefab Overload` in [`[HUB-PLAYER-SETUP-MANAGER]`](http://docs.hub.innoactive.de/api/Innoactive.Hub.PlayerSetup.PlayerSetupManager.html) scene object. 
+
+In the scene `Advanced` we use the prefab `AdvancedTrainerCamera` located in `IA-Training-Template/Resources/CustomCamera/Prefabs`. Its child uses the `AdvancedTrainingController` script to manage the overlay and that uses the `MicrosoftSapiTextToSpeechProvider` for Text to Speech.  
+
+Using this custom overlay, you can see the current training status and step but you can also start, reset, and mute the training. Besides, it allows to change the language and training mode.  
+
+For this prefab the training file to be loaded must be located in the folder `[YOUR_PROJECT_ROOT_FOLDER]/Assets/StreamingAssets/Training/DefaultTraining` and has to be named `DefaultTraining.json`. 
+
+> Note that you can only have one StreamingAssets folder and it must be placed in the root of the project directly within the Assets folder. 
+
+The localization files must be named like the two-letter ISO language code (like `en.json` or `de.json`) of the concerning languages (if there is no two-letter ISO code, it is the three-letter ISO code). They have to be located in `[YOUR_PROJECT_ROOT_FOLDER]/Assets/StreamingAssets/Training/DefaultTraining/Localization`. The script automatically loads all available valid languages from that folder and provides them in the language dropdown menu of the custom overlay. Make sure, you have all the desired languages installed on your system as described in `TTS configuration` section.
