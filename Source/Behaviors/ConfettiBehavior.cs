@@ -3,12 +3,12 @@ using System.Collections;
 using System.Runtime.Serialization;
 using Innoactive.Hub.Threading;
 using Innoactive.Hub.Training.Utils;
-using Innoactive.Hub.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
 using VRTK;
+using Object = UnityEngine.Object;
 
-namespace Innoactive.Hub.Training
+namespace Innoactive.Hub.Training.Template
 {
     /// <summary>
     /// This behavior causes confetti to rain.
@@ -73,6 +73,9 @@ namespace Innoactive.Hub.Training
         private const float defaultRadius = 1f;
         private const float distanceAboveTrainee = 3f;
 
+        private IEnumerator coroutine;
+        private GameObject confettiMachine;
+        
         [JsonConstructor]
         public ConfettiBehavior() : this(true, "", defaultPathConfettiPrefab, defaultRadius, defaultDuration, BehaviorActivationMode.Activation)
         {
@@ -93,15 +96,32 @@ namespace Innoactive.Hub.Training
             ActivationMode = activationMode;
         }
 
-        /// <inheritdoc />
-        public override void PerformActivation()
+        protected override void FastForwardActivating()
         {
-            SignalActivationStarted();
+            CoroutineDispatcher.Instance.StopCoroutine(coroutine);
+            Object.Destroy(confettiMachine);
+            EmitConfettiFinished();
+        }
 
+        protected override void FastForwardActive()
+        {
+        }
+
+        protected override void FastForwardDeactivating()
+        {
+            CoroutineDispatcher.Instance.StopCoroutine(coroutine);
+            Object.Destroy(confettiMachine);
+            EmitConfettiFinished();
+        }
+        
+        /// <inheritdoc />
+        protected override void PerformActivation()
+        {
             if ((ActivationMode & BehaviorActivationMode.Activation) > 0)
             {
                 ConfettiFinished += OnConfettiFinishedOnActivation;
-                CoroutineDispatcher.Instance.StartCoroutine(RainConfetti());
+                coroutine = RainConfetti();
+                CoroutineDispatcher.Instance.StartCoroutine(coroutine);
             }
             else
             {
@@ -110,14 +130,13 @@ namespace Innoactive.Hub.Training
         }
 
         /// <inheritdoc />
-        public override void PerformDeactivation()
+        protected override void PerformDeactivation()
         {
-            SignalDeactivationStarted();
-
             if ((ActivationMode & BehaviorActivationMode.Deactivation) > 0)
             {
                 ConfettiFinished += OnConfettiFinishedOnDeactivation;
-                CoroutineDispatcher.Instance.StartCoroutine(RainConfetti());
+                coroutine = RainConfetti();
+                CoroutineDispatcher.Instance.StartCoroutine(coroutine);
             }
             else
             {
@@ -127,7 +146,7 @@ namespace Innoactive.Hub.Training
 
         private void OnConfettiFinishedOnActivation(object sender, SpawnConfettiEventArg args)
         {
-            ConfettiStarted -= OnConfettiFinishedOnActivation;
+            ConfettiFinished -= OnConfettiFinishedOnActivation;
             SignalActivationFinished();
         }
 
@@ -188,7 +207,7 @@ namespace Innoactive.Hub.Training
             }
 
             // Spawn the machine and check if it has the interface IParticleMachine
-            GameObject confettiMachine = UnityEngine.Object.Instantiate(confettiPrefab, spawnPosition, Quaternion.Euler(90, 0, 0));
+            confettiMachine = Object.Instantiate(confettiPrefab, spawnPosition, Quaternion.Euler(90, 0, 0));
 
             if (confettiMachine == null)
             {
@@ -202,7 +221,7 @@ namespace Innoactive.Hub.Training
             if (confettiMachine.GetComponent(typeof(IParticleMachine)) == null)
             {
                 logger.Warn("The provided prefab does not have any component of type \"IParticleMachine\".");
-                UnityEngine.Object.Destroy(confettiMachine);
+                Object.Destroy(confettiMachine);
                 EmitConfettiFinished();
                 yield break;
             }
@@ -210,6 +229,8 @@ namespace Innoactive.Hub.Training
             // Change the settings and activate the machine
             IParticleMachine particleMachine = confettiMachine.GetComponent<IParticleMachine>();
             particleMachine.Activate(AreaRadius, Duration);
+            
+            EmitConfettiStarted();
 
             if (Duration > 0f)
             {
