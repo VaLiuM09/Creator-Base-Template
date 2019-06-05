@@ -1,0 +1,167 @@
+// Load all global variables from the jenkins-shared-library for Unity
+// see https://github.com/burnedikt/jenkins-shared-library-unity for source
+@Library('jenkins-shared-library-unity@v1.0') _
+
+pipeline
+{
+    agent
+    {
+        label 'unity-ng'
+    }
+
+    options
+    {
+        disableConcurrentBuilds()
+        skipDefaultCheckout true
+    }
+
+    environment
+    {
+        TEMPLATE_DIRECTORY_IN_ASSETS = "${EXTENSION_PATH}\\IA-Training-Template"
+        // Path to the module within the Unity project.
+        HUB_SDK_INITIAL_DIRECTORY = "z:\\Extensions\\Hub-SDK"
+        //Path where shared jenkins file was located initially.
+        SHARED_INITIAL = "${WORKSPACE}\\Extensions\\Hub-Training-Module\\.JenkinsFile-Shared"
+        // Path to the file with shared methods.
+        SHARED = "${WORKSPACE}\\.JenkinsFile-Shared"
+        // Path to U3D rules
+        // U3D commands need to use a dedicated set of rules for logging to get more verbose output from e.g. Common.Logging,
+        // see more at https://github.com/DragonBox/u3d/blob/master/LOG_RULES.md
+        U3D_RULES_PATH = "z:\\u3d_log_rules.json"
+        // Unity version used
+        UNITY_VERSION = '2017.4.27f1'
+        // Unity project base path
+        PROJECT_PATH = "z:\\${BUILD_TAG}"
+        // Path where the SDK should be checked out to
+        EXTENSION_PATH = "${PROJECT_PATH}\\Assets\\Extensions"
+    }
+
+    stages
+    {
+        stage('Checkout')
+        {
+            steps
+            {
+                powershell "git config --system core.longpaths true"
+                checkout scm
+                
+                powershell """
+                Copy-Item ${SHARED_INITIAL} -Destination ${WORKSPACE}
+                """
+            }
+        }
+
+        stage('Initial Setup')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).InitialSetup()
+                    powershell """
+                    subst y: /D
+                    subst y: ${PROJECT_PATH}
+                    """
+                }
+            }
+        }
+        
+        stage('Initial Setup of Hub-SDK')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).InitialSetupHubSdk(HUB_SDK_INITIAL_DIRECTORY)
+                }
+            }
+        }
+
+        stage('Setup Unity')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).SetupUnity()
+                }
+            }
+        }
+
+        stage('Copy Training Template')
+        {
+            steps
+            {
+                powershell """
+                Remove-Item ${TEMPLATE_DIRECTORY_IN_ASSETS} -Force -Recurse -ErrorAction SilentlyContinue
+            
+                New-Item ${TEMPLATE_DIRECTORY_IN_ASSETS} -ItemType Directory
+                        
+                Test-Path -Path ${TEMPLATE_DIRECTORY_IN_ASSETS}
+            
+                Move-Item -Path .\\readme.md -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path Extensions -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path PostProcessing -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path Resources -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path Scenes -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path Source -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path Tests -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                """
+            }
+        }
+
+        stage('Test')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).Test()
+                }
+            }
+        }
+
+        stage('Create Unity Package')
+        {
+            when
+            {
+                tag pattern: "v(\\d+\\.\\d+\\.\\d+)(-.*)?", comparator: "REGEXP"
+            }
+            steps
+            {
+                script
+                {
+                    load(SHARED).CreateUnityPackage("Assets/Extensions/IA-Training-Template")
+                }
+            }
+        }
+    }
+
+    post
+    {
+        always
+        {
+            archiveArtifacts allowEmptyArchive: true, artifacts: "${BUILD_TAG}/*.log"
+        }
+
+        cleanup
+        {
+            dir("${BUILD_TAG}")
+            {
+                // Publish the results of the test
+                nunit testResultsPattern: "TestResults*.xml"
+            }
+
+            powershell """
+
+            Remove-Item .\\Hub-Training-Module -Force -Recurse -ErrorAction SilentlyContinue
+            Remove-Item .\\Hub-SDK -Force -Recurse -ErrorAction SilentlyContinue
+            Remove-Item .\\${BUILD_TAG} -Force -Recurse -ErrorAction SilentlyContinue
+
+            subst y: /D
+            subst z: /D
+            exit(0)
+            """
+        }
+    }
+}
