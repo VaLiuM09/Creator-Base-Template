@@ -62,6 +62,7 @@ pipeline
                     New-Item z:\\${BUILD_TAG} -ItemType Directory
                     subst y: /D
                     subst y: z:\\${BUILD_TAG}
+                    New-Item y:\\Project
                     """
                 }
             }
