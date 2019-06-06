@@ -57,12 +57,12 @@ pipeline
             {
                 script
                 {
+                    load(SHARED).InitialSetup()
                     powershell """
                     New-Item ${PROJECT_PATH}\\Assets\\Extensions -ItemType Directory
                     subst y: /D
                     subst y: ${PROJECT_PATH}\\Assets\\Extensions
                     """
-                    load(SHARED).InitialSetup()
                 }
             }
         }
