@@ -33,7 +33,7 @@ pipeline
         // Unity project base path
         PROJECT_PATH = "z:\\${BUILD_TAG}"
         // Path where the SDK should be checked out to
-        EXTENSION_PATH = "y:"
+        EXTENSION_PATH = "y:\\Assets\\Extensions"
     }
 
     stages
@@ -59,9 +59,9 @@ pipeline
                 {
                     load(SHARED).InitialSetup()
                     powershell """
-                    New-Item ${PROJECT_PATH}\\Assets\\Extensions -ItemType Directory
+                    New-Item ${PROJECT_PATH} -ItemType Directory
                     subst y: /D
-                    subst y: ${PROJECT_PATH}\\Assets\\Extensions
+                    subst y: ${PROJECT_PATH}
                     """
                 }
             }
