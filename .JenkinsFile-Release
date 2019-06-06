@@ -31,9 +31,9 @@ pipeline
         // Unity version used
         UNITY_VERSION = '2017.4.27f1'
         // Unity project base path
-        PROJECT_PATH = "y:"
+        PROJECT_PATH = "y:\\Project"
         // Path where the SDK should be checked out to
-        EXTENSION_PATH = "y:\\Assets\\Extensions"
+        EXTENSION_PATH = "${PROJECT_PATH}\\Extensions"
     }
 
     stages
@@ -155,8 +155,7 @@ pipeline
 
             powershell """
 
-            Remove-Item .\\Hub-Training-Module -Force -Recurse -ErrorAction SilentlyContinue
-            Remove-Item .\\Hub-SDK -Force -Recurse -ErrorAction SilentlyContinue
+            Remove-Item .\\IA-Training-Template -Force -Recurse -ErrorAction SilentlyContinue
             Remove-Item .\\${BUILD_TAG} -Force -Recurse -ErrorAction SilentlyContinue
 
             subst y: /D
