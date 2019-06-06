@@ -59,9 +59,10 @@ pipeline
                 {
                     load(SHARED).InitialSetup()
                     powershell """
-                    New-Item ${PROJECT_PATH} -ItemType Directory
+                    New-Item z:\\${BUILD_TAG} -ItemType Directory
                     subst y: /D
                     subst y: z:\\${BUILD_TAG}
+                    New-Item ${PROJECT_PATH} -ItemType Directory
                     """
                 }
             }
@@ -98,8 +99,6 @@ pipeline
             
                 New-Item ${TEMPLATE_DIRECTORY_IN_ASSETS} -ItemType Directory
                         
-                Test-Path -Path ${TEMPLATE_DIRECTORY_IN_ASSETS}
-            
                 Move-Item -Path .\\readme.md -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
                 Move-Item -Path Extensions -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
                 Move-Item -Path PostProcessing -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
