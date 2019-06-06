@@ -58,6 +58,7 @@ pipeline
                 script
                 {
                     powershell """
+                    New-Item ${PROJECT_PATH}\\Assets\\Extensions -ItemType Directory
                     subst y: /D
                     subst y: ${PROJECT_PATH}\\Assets\\Extensions
                     """
