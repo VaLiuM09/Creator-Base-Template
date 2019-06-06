@@ -59,10 +59,9 @@ pipeline
                 {
                     load(SHARED).InitialSetup()
                     powershell """
-                    New-Item z:\\${BUILD_TAG} -ItemType Directory
+                    New-Item ${PROJECT_PATH} -ItemType Directory
                     subst y: /D
                     subst y: z:\\${BUILD_TAG}
-                    New-Item y:\\Project -ItemType Directory
                     """
                 }
             }
