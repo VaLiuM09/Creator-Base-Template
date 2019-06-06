@@ -142,12 +142,12 @@ pipeline
     {
         always
         {
-            archiveArtifacts allowEmptyArchive: true, artifacts: "${BUILD_TAG}/*.log"
+            archiveArtifacts allowEmptyArchive: true, artifacts: "${PROJECT_PATH}/*.log"
         }
 
         cleanup
         {
-            dir("${BUILD_TAG}")
+            dir("${PROJECT_PATH}")
             {
                 // Publish the results of the test
                 nunit testResultsPattern: "TestResults*.xml"
