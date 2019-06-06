@@ -33,7 +33,7 @@ pipeline
         // Unity project base path
         PROJECT_PATH = "y:\\Project"
         // Path where the SDK should be checked out to
-        EXTENSION_PATH = "${PROJECT_PATH}\\Extensions"
+        EXTENSION_PATH = "${PROJECT_PATH}\\Assets\\Extensions"
     }
 
     stages
