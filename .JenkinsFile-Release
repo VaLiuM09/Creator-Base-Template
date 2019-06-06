@@ -110,6 +110,17 @@ pipeline
             }
         }
 
+        stage('Build')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).Build()
+                }
+            }
+        }
+
         stage('Test')
         {
             steps
