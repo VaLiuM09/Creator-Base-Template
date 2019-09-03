@@ -83,11 +83,6 @@ namespace Innoactive.Hub.Training.Template
         private Dropdown modePicker;
         #endregion
 
-        [Space]
-        [Tooltip("The name of the folder and the file (without the extension .json) of the serialized training course in the 'Training' directory of the 'StreamingAssets' directory which should be loaded.")]
-        [SerializeField]
-        private string trainingCourseName;
-
         [Tooltip("The two-letter ISO language code (e.g. \"EN\") of the fallback language which is used by the text to speech engine if no valid localization file is found.")]
         [SerializeField]
         private string fallbackLanguage = "EN";
@@ -170,8 +165,8 @@ namespace Innoactive.Hub.Training.Template
         private List<string> FetchAvailableLocalizationsForTraining()
         {
             // Get the directory of all localization files of the selected training.
-            // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
-            string pathToLocalizations = string.Format("{0}/Training/{1}/Localization/", Application.streamingAssetsPath, trainingCourseName);
+            // It should be called 'Localization' and be in the training course's folder.
+            string pathToLocalizations = string.Format("{0}/Localization/", Path.GetDirectoryName(RuntimeConfigurator.Configuration.SelectedCoursePath));
 
             // Save all existing localization files in a list.
             List<string> availableLocalizations = new List<string>();
@@ -208,8 +203,8 @@ namespace Innoactive.Hub.Training.Template
             string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
 
             // Get the path to the file.
-            // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
-            string pathToLocalization = string.Format("{0}/Training/{1}/Localization/{2}.json", Application.streamingAssetsPath, trainingCourseName, language);
+            // It should be in the 'Localization' folder in the training course's folder.
+            string pathToLocalization = string.Format("{0}/Localization/{1}.json", Path.GetDirectoryName(RuntimeConfigurator.Configuration.SelectedCoursePath), language);
 
             // Check if the file really exists and load it.
             if (File.Exists(pathToLocalization))
@@ -219,23 +214,12 @@ namespace Innoactive.Hub.Training.Template
             }
 
             // Log a warning if no language file was found.
-            logger.WarnFormat("No language file for language '{0}' found for training {1} at '{2}'.", selectedLanguage, trainingCourseName, pathToLocalization);
+            logger.WarnFormat("No language file for language '{0}' found for course {1} at '{2}'.", selectedLanguage, Path.GetFileNameWithoutExtension(RuntimeConfigurator.Configuration.SelectedCoursePath), pathToLocalization);
         }
 
         private ICourse LoadCourse()
         {
-            // Get the path to the file.
-            // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
-            string pathToTraining = string.Format("{0}/Training/{1}/{1}.json", Application.streamingAssetsPath, trainingCourseName);
-
-            // Check if the file really exists and return the deserialized file text.
-            if (File.Exists(pathToTraining))
-            {
-                return JsonTrainingSerializer.Deserialize(File.ReadAllText(pathToTraining));
-            }
-
-            // Otherwise, throw an exception.
-            throw new ArgumentException("The file or the path to the file does not exist. Thus, no serialized training course can be loaded.", pathToTraining);
+            return RuntimeConfigurator.Configuration.LoadCourse();
         }
 
         private void FastForwardChapters(int numberOfChapters)
@@ -245,7 +229,7 @@ namespace Innoactive.Hub.Training.Template
             {
                 return;
             }
-            
+
             // Get index of the current chapter.
             int currentChapterIndex;
 
@@ -316,7 +300,7 @@ namespace Innoactive.Hub.Training.Template
 
                 //Skip all chapters before selected.
                 FastForwardChapters(chapterPicker.value);
-                
+
                 // Start the training
                 trainingCourse.Activate();
 
@@ -466,7 +450,7 @@ namespace Innoactive.Hub.Training.Template
             // Show all chapters of the training.
             PopulateChapterPickerOptions(0);
 
-            // When the current chapter is changed, 
+            // When the current chapter is changed,
             trainingCourse.CurrentChildChanged += (sender, args) =>
             {
                 // Get a collection of available chapters.
@@ -485,7 +469,7 @@ namespace Innoactive.Hub.Training.Template
             // Get a collection of available chapters.
             IList<IChapter> chapters = trainingCourse.Chapters;
 
-            // Skip finished chapters and convert the rest to a list of chapter names. 
+            // Skip finished chapters and convert the rest to a list of chapter names.
             List<string> dropdownOptions = new List<string>();
             for (int i = startingIndex; i < chapters.Count; i++)
             {

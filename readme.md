@@ -53,28 +53,25 @@ Create a new C# script named TrainingCourseLoader and replace its contents with 
 
 ```c#
 using System.Collections;
-using Innoactive.Hub.Training.Utils.Serialization;
+using Innoactive.Hub.Training.Configuration;
 using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template
 {
     public class TrainingCourseLoader : MonoBehaviour
     {
-        [SerializeField]
-        [Tooltip("Text asset with a saved training course.")]
-        private TextAsset serializedTrainingCourse;
-
         private IEnumerator Start()
         {
             // Skip the first two frames to give VRTK time to initialize.
             yield return null;
             yield return null;
 
-            // Load a training from the text asset.
-            ICourse training = JsonTrainingSerializer.Deserialize(serializedTrainingCourse.text);
+            // Load the training course selected from the Runtime Configurator
+            // in the '[TRAINING_CONFIGURATION]' game object in the scene.
+            ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse();
 
             // Start the training execution.
-            training.Activate();
+            trainingCourse.Activate();
         }
     }
 }
@@ -95,7 +92,7 @@ Cheers! You've covered the basics.
 
 The following chapters describe available Training Module features and explain how to use them to create more complex templates. You can tune both training designer tools and a running application logic with Training module configurations, or you can extend it with your own behaviors and conditions.
 
- We recommend you to explore this project while you are reading this tutorial.
+We recommend you to explore this project while you are reading this tutorial.
 
 # Template configuration
 
@@ -103,7 +100,7 @@ You can either modify training designer tools with editor configuration, or you 
 
 ## Editor configuration
 
-To change the editor configuration, implement `Innoactive.Hub.Training.Editors.Configuration.IEditorConfiguration` interface. The Training Module will automatically locate it if you do so, and will use the `DefaultEditorConfiguration` otherwise. If there are more than one custom editor configurations, an error will be logged and a random configuration is used.
+To change the editor configuration, implement `Innoactive.Hub.Training.Editors.Configuration.IEditorConfiguration` interface. The Training Module will automatically locate it if you do so, and will use the `DefaultEditorConfiguration` otherwise. If there is more than one custom editor configuration, an error will be logged and a random configuration will be used.
 
  > This is the main reason why we recommend to build a template from scratch instead of extending this project.
 
@@ -120,10 +117,11 @@ Finally, you define what happens when someone clicks at `Innoactive > Training >
 
 You can use the runtime configuration to adjust the way the training application executes in a runtime.
  
-There should be one and only one training runtime configurator scene object in a scene. In the scenes of this example template, the game object is called `[TRAINING_CONFIGURATION]`. This object is just a container for the runtime configuration, which actually customizes the template. You can assign the runtime configuration either programmatically, or with the game object inspector. By default, the `Innoactive.Hub.Training.Configuration.DefaultRuntimeConfiguration` is used. Extend it to create your own, and then assign it to the scene's game object. Take a look at `InnoactiveRuntimeConfiguration` to see how to implement other training modes like the `No Audio Hints` mode.
+There should be one and only one training runtime configurator scene object in a scene. In the scenes of this example template, the game object is called `[TRAINING_CONFIGURATION]`. This object is a container for the runtime configuration, which actually customizes the template. You can assign the runtime configuration either programmatically, or with the game object inspector. By default, the `Innoactive.Hub.Training.Configuration.DefaultRuntimeConfiguration` is used. Extend it to create your own, and then assign it to the scene's game object. Take a look at `InnoactiveRuntimeConfiguration` to see how to implement other training modes like the `No Audio Hints` mode.
  
 The runtime configuration has the following properties and methods:
 
+1. `SelectedCoursePath` returns the absolute path to the training course file.
 1. `SceneObjectRegistry` provides the access to all training objects and properties of the current scene.
 2. `Trainee` is a shortcut to a trainee's headset.
 3. `InstructionPlayer` is a default audio source for all `PlayAudioBehavior` behaviors.
