@@ -1,23 +1,20 @@
 ﻿using System.Collections;
-using Innoactive.Hub.Training.Utils.Serialization;
+using Innoactive.Hub.Training.Configuration;
 using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template
 {
     public class TrainingCourseLoader : MonoBehaviour
     {
-        [SerializeField]
-        [Tooltip("Text asset with a saved training course.")]
-        private TextAsset serializedTrainingCourse;
-
         private IEnumerator Start()
         {
             // Skip the first two frames to give VRTK time to initialize.
             yield return null;
             yield return null;
 
-            // Load a training course from the text asset.
-            ICourse trainingCourse = JsonTrainingSerializer.Deserialize(serializedTrainingCourse.text);
+            // Load the training course selected from the Runtime Configurator
+            // in the '[TRAINING_CONFIGURATION]' game object in the scene.
+            ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse();
 
             // Start the training execution.
             trainingCourse.Activate();
