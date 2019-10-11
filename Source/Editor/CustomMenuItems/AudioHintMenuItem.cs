@@ -28,7 +28,9 @@ namespace Innoactive.Hub.Training.Template.Editors
             });
             behaviorSequence.Data.Name = "Audio Hint";
 
-            return new NonblockingWrapperBehavior(behaviorSequence, false);
+            behaviorSequence.Data.IsBlocking = false;
+
+            return behaviorSequence;
         }
     }
 }
