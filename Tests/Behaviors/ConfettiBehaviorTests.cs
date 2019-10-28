@@ -84,7 +84,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
             behavior.Configure(defaultMode);
 
-            // When I activate that behavior and wait until it's activating and one update cycle was ran,
+            // When I activate that behavior and wait until it's activating,
             behavior.LifeCycle.Activate();
 
             while (behavior.LifeCycle.Stage != Stage.Activating)
@@ -92,9 +92,6 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
                 yield return null;
                 behavior.Update();
             }
-
-            yield return null;
-            behavior.Update();
 
             string prefabName = "Behavior" + pathToPrefab.Substring(pathToPrefab.LastIndexOf("/", StringComparison.Ordinal) + 1);
             GameObject machine = GameObject.Find(prefabName);
@@ -322,7 +319,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             float behaviorDuration = Time.time - startTime;
 
             // Then the activation state of the behavior is "active" after the expected duration.
-            Assert.AreEqual(duration, behaviorDuration, 0.1f);
+            Assert.AreEqual(duration, behaviorDuration, Time.deltaTime);
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
         }
 
