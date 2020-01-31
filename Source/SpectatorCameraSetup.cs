@@ -1,6 +1,10 @@
-﻿using Innoactive.Hub.SDK.Models;
+﻿using System;
+using Innoactive.Hub.SDK.Models;
+using Innoactive.Hub.Training.Configuration;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
+using VRTK;
 
 namespace Innoactive.Hub.PlayerSetup
 {
@@ -21,6 +25,10 @@ namespace Innoactive.Hub.PlayerSetup
         [SerializeField]
         protected Font font;
         
+        [Tooltip("Size of the font used")]
+        [SerializeField]
+        protected int fontSize = 30;
+
         private GameObject currentSpectatorInstance = null;
 
         protected virtual void Start()
@@ -36,8 +44,6 @@ namespace Innoactive.Hub.PlayerSetup
             }
             GameObject spectatorPrefab = spectatorCamPrefabOverload == null ? Resources.Load<GameObject>("Spectator Camera") : spectatorCamPrefabOverload;
             currentSpectatorInstance = Instantiate(spectatorPrefab, transform.position, transform.rotation);
-            Camera spectatorCamera = currentSpectatorInstance.GetComponentInChildren<Camera>();
-
             SetFont();
         }
 
@@ -46,6 +52,7 @@ namespace Innoactive.Hub.PlayerSetup
             foreach (Text text in currentSpectatorInstance.GetComponentsInChildren<Text>(true))
             {
                 text.font = font;
+                text.fontSize = fontSize;
             }
         }
     }
