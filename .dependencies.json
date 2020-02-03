@@ -3,7 +3,7 @@
         {
             "name": "Core",
             "repository": "git@github.com:Innoactive/Creator.git",
-            "branch": "refs/tags/v1.3.0"
+            "branch": "refs/tags/v1.3.1"
         }
     ]
 }
