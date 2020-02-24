@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Common.Logging;
 using Innoactive.Hub.Threading;
 using Innoactive.Hub.TextToSpeech;
 using Innoactive.Hub.Training.Configuration;
 using Innoactive.Hub.Training.Configuration.Modes;
 using Innoactive.Hub.Training.TextToSpeech;
+using Innoactive.Creator.Internationalization;
 using Innoactive.Hub.Training.Unity.Utils;
 using Innoactive.Hub.Training.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using LogManager = Innoactive.Hub.Logging.LogManager;
 
 namespace Innoactive.Hub.Training.Template
 {
@@ -22,8 +21,6 @@ namespace Innoactive.Hub.Training.Template
     /// </summary>
     public class AdvancedTrainingController : MonoBehaviour
     {
-        private static readonly ILog logger = LogManager.GetLogger<AdvancedTrainingController>();
-
         #region UI elements
         [Tooltip("Chapter picker dropdown.")]
         [SerializeField]
@@ -112,7 +109,7 @@ namespace Innoactive.Hub.Training.Template
             // If not, use "EN" instead.
             else
             {
-                logger.WarnFormat("'{0}' is no valid language. Changed fallback language to 'EN'.", fallbackLanguage);
+                Debug.LogWarningFormat("'{0}' is no valid language. Changed fallback language to 'EN'.", fallbackLanguage);
                 fallbackLanguage = "EN";
             }
 
@@ -186,21 +183,20 @@ namespace Innoactive.Hub.Training.Template
         private void SetupTraining()
         {
             // You can define which TTS engine is used through TTS config.
-            TextToSpeechConfig ttsConfig = new TextToSpeechConfig()
-            {
-                // Define which TTS provider is used.
-                Provider = typeof(MicrosoftSapiTextToSpeechProvider).Name,
-
-                // The acceptable values for the Voice and the Language differ from TTS provider to provider.
-                // Microsoft SAPI TTS provider takes either "Male" or "Female" value as a voice.
-                Voice = "Female",
-
-                // Microsoft SAPI TTS provider takes either natural language name, or two-letter ISO language code.
-                Language = selectedLanguage
-            };
+            TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
+            
+            // Define which TTS provider is used.
+            ttsConfiguration.Provider = typeof(MicrosoftSapiTextToSpeechProvider).Name;
+            
+            // The acceptable values for the Voice and the Language differ from TTS provider to provider.
+            // Microsoft SAPI TTS provider takes either "Male" or "Female" value as a voice.
+            ttsConfiguration.Voice = "Female";
+            
+            // Microsoft SAPI TTS provider takes either natural language name, or two-letter ISO language code.
+            ttsConfiguration.Language = selectedLanguage;
 
             // If TTS config overload is set, it is used instead the config that is located at `[YOUR_PROJECT_ROOT_FOLDER]/Config/text-to-speech-config.json`.
-            RuntimeConfigurator.Configuration.TextToSpeechConfig = ttsConfig;
+            RuntimeConfigurator.Configuration.SetTextToSpeechConfiguration(ttsConfiguration);
 
             // Load the localization file of the current selected language.
             LoadLocalizationForTraining();
@@ -232,13 +228,13 @@ namespace Innoactive.Hub.Training.Template
                 // If there are no valid files, log a warning.
                 if (availableLocalizations.Count == 0)
                 {
-                    logger.WarnFormat("There are no valid localization files in '{0}'. Make sure that the JSON files are named after their languages in the two-letter ISO code format.", pathToLocalizations);
+                    Debug.LogWarningFormat("There are no valid localization files in '{0}'. Make sure that the JSON files are named after their languages in the two-letter ISO code format.", pathToLocalizations);
                 }
             }
             else
             {
                 // If there is no "Localization" directory, log a warning.
-                logger.WarnFormat("The localization path '{0}' does not exist. No localization files can be loaded.", pathToLocalizations);
+                Debug.LogWarningFormat("The localization path '{0}' does not exist. No localization files can be loaded.", pathToLocalizations);
             }
 
             // Return the list of all available valid localizations.
@@ -263,7 +259,7 @@ namespace Innoactive.Hub.Training.Template
             }
 
             // Log a warning if no language file was found.
-            logger.WarnFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, pathToCourse);
+            Debug.LogWarningFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, pathToCourse);
         }
 
         private void FastForwardChapters(int numberOfChapters)
