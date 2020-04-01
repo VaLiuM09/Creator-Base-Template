@@ -202,7 +202,7 @@ namespace Innoactive.Hub.Training.Template
             LoadLocalizationForTraining();
 
             // Load training course from a file. That will synthesize an audio for the training instructions, too.
-            string coursePath = RuntimeConfigurator.GetSelectedTrainingCourse();
+            string coursePath = RuntimeConfigurator.Instance.GetSelectedTrainingCourse();
             ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
             TrainingRunner.Initialize(trainingCourse);
         }
@@ -211,8 +211,9 @@ namespace Innoactive.Hub.Training.Template
         {
             // Get the directory of all localization files of the selected training.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
-            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.GetSelectedTrainingCourse()));
-            string pathToLocalizations = string.Format("{0}/Localization/", pathToCourse).Replace('/', Path.DirectorySeparatorChar);
+            string pathToCourse = RuntimeConfigurator.Instance.GetSelectedTrainingCourse();
+            pathToCourse = Path.GetDirectoryName(pathToCourse);
+            string pathToLocalizations = string.Format("{0}/{1}/Localization/", Application.streamingAssetsPath, pathToCourse);
 
             // Save all existing localization files in a list.
             List<string> availableLocalizations = new List<string>();
@@ -250,7 +251,7 @@ namespace Innoactive.Hub.Training.Template
 
             // Get the path to the file.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
-            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.GetSelectedTrainingCourse()));
+            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedTrainingCourse()));
             string pathToLocalization = string.Format("{0}/Localization/{1}.json", pathToCourse, language).Replace('/', Path.DirectorySeparatorChar);
 
             // Check if the file really exists and load it.
