@@ -10,5 +10,8 @@
 
         /// <inheritdoc/>
         public override int Priority { get; } = 10;
+
+        /// <inheritdoc/>
+        protected override string[] Layers { get; } = {"Post-Processing"};
     }
 }

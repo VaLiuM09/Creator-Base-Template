@@ -1,24 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Innoactive.Creator.Core;
+using Innoactive.Creator.Unity;
+using Innoactive.Creator.TextToSpeech;
 using Innoactive.Creator.Core.Configuration;
 using Innoactive.Creator.Core.Configuration.Modes;
 using Innoactive.Creator.Core.Internationalization;
-using Innoactive.Creator.TextToSpeech;
-using Innoactive.Creator.Unity;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
-namespace Innoactive.Hub.Training.Template
+namespace Innoactive.Creator.BasicTemplate
 {
     /// <summary>
     /// Controller class for an example of a custom training overlay with audio and localization.
     /// </summary>
-    public class AdvancedTrainingController : MonoBehaviour
+    public class AdvancedCourseController : MonoBehaviour
     {
         #region UI elements
         [Tooltip("Chapter picker dropdown.")]
@@ -60,14 +60,18 @@ namespace Innoactive.Hub.Training.Template
         [Tooltip("Toggle that turns training audio on or off.")]
         [SerializeField]
         private Toggle soundToggle;
+        
+        [Tooltip("Image that shows the sound icon.")]
+        [SerializeField]
+        private Image soundImage;
 
         [Tooltip("Icon that indicates that sound is enabled.")]
         [SerializeField]
-        private Image soundOnImage;
+        private Sprite soundOnImage;
 
         [Tooltip("Icon that indicates that sound is disabled.")]
         [SerializeField]
-        private Image soundOffImage;
+        private Sprite soundOffImage;
 
         [Tooltip("Language picker dropdown.")]
         [SerializeField]
@@ -88,21 +92,29 @@ namespace Innoactive.Hub.Training.Template
         private FieldInfo skipStepPickerEditorValueField;
 
         private IStep displayedStep;
+        private ICourse trainingCourse;
         private IChapter lastDisplayedChapter;
 
-        // Called once when object is created.
         private void Awake()
         {
-            // Create new audio source and make it the default audio player.
-            //RuntimeConfigurator.Instance.InstructionPlayer = gameObject.AddComponent<AudioSource>();
+            try
+            {
+                // Load training course from a file.
+                string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
+                trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError($"{exception.GetType().Name}, {exception.Message}\n{exception.StackTrace}", RuntimeConfigurator.Instance.gameObject);
+            }
 
             // Get the current system language as default language.
             selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
 
             // Check if the fallback language is a valid language.
             fallbackLanguage = fallbackLanguage.Trim();
-            string validFallbackLanguage;
-            if (fallbackLanguage.TryConvertToTwoLetterIsoCode(out validFallbackLanguage))
+            
+            if (fallbackLanguage.TryConvertToTwoLetterIsoCode(out string validFallbackLanguage))
             {
                 fallbackLanguage = validFallbackLanguage;
             }
@@ -128,14 +140,15 @@ namespace Innoactive.Hub.Training.Template
 
             // Load the training and localize it to the selected language.
             SetupTraining();
+            
             // Update the UI.
-            SetupTrainingDependantUi();
+            SetupTrainingDependantUI();
         }
 
         private void Update()
         {
             IChapter currentChapter = CourseRunner.Current == null ? null : CourseRunner.Current.Data.Current;
-            IStep currentStep = currentChapter == null ? null : currentChapter.Data.Current;
+            IStep currentStep = currentChapter?.Data.Current;
 
             if (currentChapter != lastDisplayedChapter)
             {
@@ -155,8 +168,8 @@ namespace Innoactive.Hub.Training.Template
             if (step == null)
             {
                 // If there is no next step, clear the info text.
-                stepInfoText.text = "";
-                stepName.text = "";
+                stepInfoText.text = string.Empty;
+                stepName.text = string.Empty;
             }
             else
             {
@@ -186,7 +199,7 @@ namespace Innoactive.Hub.Training.Template
             TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
             
             // Define which TTS provider is used.
-            ttsConfiguration.Provider = typeof(MicrosoftSapiTextToSpeechProvider).Name;
+            ttsConfiguration.Provider = nameof(MicrosoftSapiTextToSpeechProvider);
             
             // The acceptable values for the Voice and the Language differ from TTS provider to provider.
             // Microsoft SAPI TTS provider takes either "Male" or "Female" value as a voice.
@@ -200,10 +213,8 @@ namespace Innoactive.Hub.Training.Template
 
             // Load the localization file of the current selected language.
             LoadLocalizationForTraining();
-
-            // Load training course from a file. That will synthesize an audio for the training instructions, too.
-            string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
-            ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
+            
+            // Initializes the training course. That will synthesize an audio for the training instructions, too.
             CourseRunner.Initialize(trainingCourse);
         }
 
@@ -212,7 +223,7 @@ namespace Innoactive.Hub.Training.Template
             // Get the directory of all localization files of the selected training.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
             string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedCourse()));
-            string pathToLocalizations = string.Format("{0}/Localization/", pathToCourse).Replace('/', Path.DirectorySeparatorChar);
+            string pathToLocalizations = $"{pathToCourse}/Localization/".Replace('/', Path.DirectorySeparatorChar);
 
             // Save all existing localization files in a list.
             List<string> availableLocalizations = new List<string>();
@@ -251,7 +262,7 @@ namespace Innoactive.Hub.Training.Template
             // Get the path to the file.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
             string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedCourse()));
-            string pathToLocalization = string.Format("{0}/Localization/{1}.json", pathToCourse, language).Replace('/', Path.DirectorySeparatorChar);
+            string pathToLocalization = $"{pathToCourse}/Localization/{language}.json".Replace('/', Path.DirectorySeparatorChar);
 
             // Check if the file really exists and load it.
             if (File.Exists(pathToLocalization))
@@ -302,6 +313,14 @@ namespace Innoactive.Hub.Training.Template
             // When info toggle is pressed,
             stepInfoToggle.onValueChanged.AddListener(newValue =>
             {
+                if (string.IsNullOrEmpty(stepInfoText.text))
+                {
+                    // Show or hide description of the step.
+                    stepInfoBackground.enabled = false;
+                    stepInfoText.enabled = false;
+                    return;
+                }
+                
                 // Show or hide description of the step.
                 stepInfoBackground.enabled = newValue;
                 stepInfoText.enabled = newValue;
@@ -313,6 +332,12 @@ namespace Innoactive.Hub.Training.Template
             // When user clicks on Start Training button,
             startTrainingButton.onClick.AddListener(() =>
             {
+                if (CourseRunner.Current == null)
+                {
+                    Debug.LogError("No training course is selected.", RuntimeConfigurator.Instance.gameObject);
+                    return;
+                }
+                
                 // Subscribe to the "stage changed" event of the current training in order to change the skip step button to the start button after finishing the training.
                 CourseRunner.Current.LifeCycle.StageChanged += (sender, args) =>
                 {
@@ -328,15 +353,15 @@ namespace Innoactive.Hub.Training.Template
 
                 // Start the training
                 CourseRunner.Run();
+                
+                // Show the skip step button instead of the start button.
+                skipStepPicker.gameObject.SetActive(true);
+                startTrainingButton.gameObject.SetActive(false);
 
                 // Disable button as you have to reset scene before starting the training again.
                 startTrainingButton.interactable = false;
                 // Disable the language picker as it is not allowed to change the language during the training's execution.
                 languagePicker.interactable = false;
-
-                // Show the skip step button instead of the start button.
-                skipStepPicker.gameObject.SetActive(true);
-                startTrainingButton.gameObject.SetActive(false);
             });
         }
 
@@ -380,12 +405,9 @@ namespace Innoactive.Hub.Training.Template
             soundToggle.onValueChanged.AddListener(isSoundOn =>
             {
                 // Set active image for sound.
-                soundToggle.image = isSoundOn ? soundOnImage : soundOffImage;
-                // Show one icon and hide another.
-                soundOnImage.enabled = isSoundOn;
-                soundOffImage.enabled = isSoundOn == false;
+                soundImage.sprite = isSoundOn ? soundOnImage : soundOffImage;
 
-                // Mute the instuction audio.
+                // Mute the instruction audio.
                 RuntimeConfigurator.Configuration.InstructionPlayer.mute = isSoundOn == false;
             });
         }
@@ -435,8 +457,11 @@ namespace Innoactive.Hub.Training.Template
                 // Load the training and localize it to the selected language.
                 SetupTraining();
                 // Update the UI.
-                SetupTrainingDependantUi();
+                SetupTrainingDependantUI();
             });
+            
+            // If there is only one option, the dropdown is currently disabled.
+            languagePicker.enabled = supportedLanguages.Count > 1;
         }
 
         private void SetupModePicker()
@@ -456,6 +481,9 @@ namespace Innoactive.Hub.Training.Template
             // Set the picker value to the current selected mode.
             modePicker.value = RuntimeConfigurator.Configuration.Modes.CurrentModeIndex;
             
+            // If there is only one option, the dropdown is currently disabled.
+            modePicker.enabled = availableModes.Count > 1;
+            
             // When the selected mode is changed,
             modePicker.onValueChanged.AddListener(itemIndex =>
             {
@@ -466,7 +494,7 @@ namespace Innoactive.Hub.Training.Template
         #endregion
 
         #region Setup training-dependant UI
-        private void SetupTrainingDependantUi()
+        private void SetupTrainingDependantUI()
         {
             SetupChapterPickerOptions();
             SetupTrainingIndicator();
@@ -481,28 +509,30 @@ namespace Innoactive.Hub.Training.Template
         private void PopulateChapterPickerOptions(int startingIndex)
         {
             // Get a collection of available chapters.
-            IList<IChapter> chapters = CourseRunner.Current.Data.Chapters;
+            IList<IChapter> chapters = CourseRunner.Current?.Data.Chapters;
 
-            // Skip finished chapters and convert the rest to a list of chapter names.
-            List<string> dropdownOptions = new List<string>();
-            for (int i = startingIndex; i < chapters.Count; i++)
+            if (chapters != null)
             {
-                dropdownOptions.Add(chapters[i].Data.Name);
+                // Skip finished chapters and convert the rest to a list of chapter names.
+                List<string> dropdownOptions = new List<string>();
+                
+                for (int i = startingIndex; i < chapters.Count; i++)
+                {
+                    dropdownOptions.Add(chapters[i].Data.Name);
+                }
+
+                // Reset the chapter picker.
+                chapterPicker.ClearOptions();
+
+                // Populate it with new options.
+                chapterPicker.AddOptions(dropdownOptions);
+
+                // Reset the selected value
+                chapterPicker.value = 0;
+
+                // If there is only one option, the dropdown is currently disabled.
+                chapterPicker.enabled = dropdownOptions.Count > 1;
             }
-
-            // Reset the chapter picker.
-            chapterPicker.ClearOptions();
-
-            // Populate it with new options.
-            chapterPicker.AddOptions(dropdownOptions);
-
-            // Reset the selected value
-            chapterPicker.value = 0;
-
-            // Refresh chapter picker immediately.
-            // Note that this method is not a part of the `UnityEngine.UI.Dropdown` interface.
-            // It is an extension method defined in `Innoactive.Hub.Training.Unity.Utils.UnityUiUtils` class.
-            //chapterPicker.Refresh();
         }
 
         private void SetupSkipStepPickerOptions()
@@ -535,6 +565,11 @@ namespace Innoactive.Hub.Training.Template
 
         private void SetupTrainingIndicator()
         {
+            if (CourseRunner.Current == null)
+            {
+                return;
+            }
+            
             CourseRunner.Current.LifeCycle.StageChanged += (sender, args) =>
             {
                 if (args.Stage == Stage.Activating)
