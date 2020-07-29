@@ -1,14 +1,12 @@
-﻿#if UNITY_EDITOR
-
-using System;
+﻿using System;
 using System.Collections;
-using Innoactive.Hub.Training;
+using Innoactive.Creator.Tests.Utils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Hub.Unity.Tests.Training.Template.ParticleMachine
+namespace Innoactive.Creator.BaseTemplate.Tests.ParticleMachine
 {
     public class ConfettiMachineTests : RuntimeTests
     {
@@ -409,5 +407,3 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.ParticleMachine
         }
     }
 }
-
-#endif

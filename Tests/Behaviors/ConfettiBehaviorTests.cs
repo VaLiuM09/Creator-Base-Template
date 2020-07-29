@@ -1,18 +1,18 @@
-﻿#if UNITY_EDITOR
-
-using System;
+﻿using System;
 using System.Collections;
-using Innoactive.Hub.Training;
-using Innoactive.Hub.Training.Behaviors;
-using Innoactive.Hub.Training.Configuration.Modes;
-using Innoactive.Hub.Training.SceneObjects;
-using Innoactive.Hub.Training.Template;
+using Innoactive.Creator.BaseTemplate.Behaviors;
+using Innoactive.Creator.Core;
+using Innoactive.Creator.Core.Behaviors;
+using Innoactive.Creator.Core.Configuration.Modes;
+using Innoactive.Creator.Core.SceneObjects;
+
+using Innoactive.Creator.Tests.Utils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
+namespace Innoactive.Creator.BaseTemplate.Tests.Behaviors
 {
     public class ConfettiBehaviorTests : RuntimeTests
     {
@@ -250,14 +250,6 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         }
 
         [UnityTest]
-        public IEnumerator SpawnAboveTrainee()
-        {
-            // TODO: VRTK_DeviceFinder does not work in test scenes. So it is not possible to actually spawn the confetti machine above the trainee that way.
-
-            yield return null;
-        }
-
-        [UnityTest]
         public IEnumerator StillActivatingWhenPositiveDurationNotFinished()
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Activation,
@@ -483,5 +475,3 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         }
     }
 }
-
-#endif
