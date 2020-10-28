@@ -6,6 +6,7 @@ using Innoactive.Creator.Core;
 using Innoactive.Creator.Core.Behaviors;
 using Innoactive.Creator.Core.Attributes;
 using Innoactive.Creator.Core.SceneObjects;
+using Innoactive.Creator.Core.Validation;
 
 namespace Innoactive.Creator.BaseTemplate.Behaviors
 {
@@ -27,6 +28,9 @@ namespace Innoactive.Creator.BaseTemplate.Behaviors
             public Vector3 TargetScale { get; set; }
 
             // Duration of the animation in seconds.
+#if CREATOR_PRO     
+            [OptionalValue]
+#endif
             [DataMember]
             [DisplayName("Animation Duration")]
             public float Duration { get; set; }
