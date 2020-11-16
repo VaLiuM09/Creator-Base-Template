@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Unity;
+using Innoactive.Creator.Core.IO;
 using Innoactive.Creator.TextToSpeech;
 using Innoactive.Creator.Core.Configuration;
 using Innoactive.Creator.Core.Configuration.Modes;
@@ -114,9 +115,16 @@ namespace Innoactive.Creator.BaseTemplate
                 fallbackLanguage = "EN";
             }
 
+            // You can define which TTS engine is used through TTS config.
+            TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
+            if (string.IsNullOrEmpty(ttsConfiguration.Language) == false)
+            {
+                selectedLanguage = ttsConfiguration.Language;
+            }
+            
             // Get all the available localization files for the selected training.
             localizationFileNames = FetchAvailableLocalizationsForTraining();
-
+            
             // Setup UI controls.
             SetupChapterPicker();
             SetupStepInfoToggle();
@@ -126,7 +134,7 @@ namespace Innoactive.Creator.BaseTemplate
             SetupSoundToggle();
             SetupLanguagePicker();
             SetupModePicker();
-
+            
             // Load the training and localize it to the selected language.
             SetupTraining();
             
@@ -184,34 +192,21 @@ namespace Innoactive.Creator.BaseTemplate
 
         private void SetupTraining()
         {
-            // You can define which TTS engine is used through TTS config.
-            TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
+            // Load training course from a file.
+            string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
             
-            // If you want to change the default TTS settings,
-            // go to `Innoactive > Creator > Windows > TextToSpeech Settings` in your Unity Editor.
-            // There you can define which TTS provider is used and which voice can be heard.
-            // The acceptable values for the Voice and the Language differ from TTS provider to provider.
-            // Microsoft SAPI TTS provider takes either "Male" or "Female" value as a voice.
-            // Cache is used to save the recorded TTS files into the Streaming Assets folder. This is useful, when 
-            // the TTS provider is not accessible all the time (no MicrosoftSapi on Android, no Internet connection, ...).
-
-            // To set the language we selected in our Language Picker, we need to change the field programmatically.
-            // Microsoft SAPI TTS provider takes either natural language name, or two-letter ISO language code.
-            ttsConfiguration.Language = selectedLanguage;
-
             // Load the localization file of the current selected language.
-            LoadLocalizationForTraining();
+            LoadLocalizationForTraining(coursePath);
             
             // Try to load the in the [TRAINING_CONFIGURATION] selected training course.
             try
             {
-                // Load training course from a file.
-                string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
                 trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
             }
             catch (Exception exception)
             {
                 Debug.LogError($"{exception.GetType().Name}, {exception.Message}\n{exception.StackTrace}", RuntimeConfigurator.Instance.gameObject);
+                return;
             }
             
             // Initializes the training course. That will synthesize an audio for the training instructions, too.
@@ -222,57 +217,51 @@ namespace Innoactive.Creator.BaseTemplate
         {
             // Get the directory of all localization files of the selected training.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
-            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedCourse()));
-            string pathToLocalizations = $"{pathToCourse}/Localization/".Replace('/', Path.DirectorySeparatorChar);
+            string pathToCourse = Path.GetDirectoryName(RuntimeConfigurator.Instance.GetSelectedCourse());
+            string pathToLocalizations = Path.Combine(pathToCourse, "Localization");
 
             // Save all existing localization files in a list.
             List<string> availableLocalizations = new List<string>();
 
-            // Check if the "Localization" directory really exists.
-            if (Directory.Exists(pathToLocalizations))
+            try
             {
                 // Parse the names without extension (.json) of all localization files.
                 // The name should be a valid two-letter ISO code (which also can be three letters long).
-                availableLocalizations = Directory.GetFiles(pathToLocalizations, "*.json").ToList()
+                availableLocalizations = FileManager.FetchStreamingAssetsFilesAt(pathToLocalizations, "*.json")
+                    .ToList()
                     .ConvertAll(Path.GetFileNameWithoutExtension)
                     .Where(f => f.Length <= 3 && f.TryConvertToTwoLetterIsoCode(out f))
                     .ToList();
-
-                // If there are no valid files, log a warning.
-                if (availableLocalizations.Count == 0)
-                {
-                    Debug.LogWarningFormat("There are no valid localization files in '{0}'. Make sure that the JSON files are named after their languages in the two-letter ISO code format.", pathToLocalizations);
-                }
             }
-            else
+            catch (Exception exception)
             {
-                // If there is no "Localization" directory, log a warning.
-                Debug.LogWarningFormat("The localization path '{0}' does not exist. No localization files can be loaded.", pathToLocalizations);
+                Debug.LogWarning(exception is DirectoryNotFoundException ? $"The localization path '{pathToLocalizations}' does not exist. No localization files can be loaded." : $"{exception.Message}");
             }
 
             // Return the list of all available valid localizations.
             return availableLocalizations;
         }
 
-        private void LoadLocalizationForTraining()
+        private void LoadLocalizationForTraining(string coursePath)
         {
+            string courseName = Path.GetFileNameWithoutExtension(coursePath);
+            
             // Find the correct file name of the current selected language.
             string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
 
             // Get the path to the file.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
-            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedCourse()));
-            string pathToLocalization = $"{pathToCourse}/Localization/{language}.json".Replace('/', Path.DirectorySeparatorChar);
+            string localizationFilePath = Path.Combine("Training", courseName, "Localization", $"{language}.json");
 
             // Check if the file really exists and load it.
-            if (File.Exists(pathToLocalization))
+            if (FileManager.Exists(localizationFilePath))
             {
-                Localization.LoadLocalization(pathToLocalization);
+                Localization.LoadLocalization(localizationFilePath);
                 return;
             }
 
             // Log a warning if no language file was found.
-            Debug.LogWarningFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, pathToCourse);
+            Debug.LogWarningFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, courseName);
         }
 
         private void FastForwardChapters(int numberOfChapters)
@@ -440,6 +429,10 @@ namespace Innoactive.Creator.BaseTemplate
                 {
                     selectedLanguage = supportedLanguages[languagePicker.value];
                 }
+                else if (string.IsNullOrEmpty(RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language) == false)
+                {
+                    languagePicker.AddOptions(new List<string>() { RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language.ToUpper() });
+                }
                 // Or use the fallback language, if there is no valid localization file at all.
                 else
                 {
@@ -454,6 +447,7 @@ namespace Innoactive.Creator.BaseTemplate
             {
                 // Set the supported language based on the user selection.
                 selectedLanguage = supportedLanguages[itemIndex];
+                RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language = selectedLanguage;
                 // Load the training and localize it to the selected language.
                 SetupTraining();
                 // Update the UI.
@@ -461,7 +455,7 @@ namespace Innoactive.Creator.BaseTemplate
             });
             
             // If there is only one option, the dropdown is currently disabled.
-            languagePicker.enabled = supportedLanguages.Count > 1;
+            SetDropDownStatus(languagePicker);
         }
 
         private void SetupModePicker()
@@ -482,7 +476,7 @@ namespace Innoactive.Creator.BaseTemplate
             modePicker.value = RuntimeConfigurator.Configuration.Modes.CurrentModeIndex;
             
             // If there is only one option, the dropdown is currently disabled.
-            modePicker.enabled = availableModes.Count > 1;
+            SetDropDownStatus(modePicker);
             
             // When the selected mode is changed,
             modePicker.onValueChanged.AddListener(itemIndex =>
@@ -523,15 +517,15 @@ namespace Innoactive.Creator.BaseTemplate
 
                 // Reset the chapter picker.
                 chapterPicker.ClearOptions();
-
+                
                 // Populate it with new options.
                 chapterPicker.AddOptions(dropdownOptions);
-
+                
                 // Reset the selected value
                 chapterPicker.value = 0;
-
+                
                 // If there is only one option, the dropdown is currently disabled.
-                chapterPicker.enabled = dropdownOptions.Count > 1;
+                SetDropDownStatus(chapterPicker);
             }
         }
 
@@ -584,6 +578,17 @@ namespace Innoactive.Creator.BaseTemplate
                     trainingStateIndicator.enabled = false;
                 }
             };
+        }
+        
+        private void SetDropDownStatus(Dropdown dropdown)
+        {
+            if (dropdown.options.Count <= 1)
+            {
+                ColorBlock colorBlock = dropdown.colors;
+                colorBlock.normalColor = Color.gray;
+                dropdown.colors = colorBlock;
+                dropdown.enabled = false;
+            }
         }
         #endregion
     }
