@@ -92,7 +92,7 @@ stages:
           targetType: 'inline'
           script: |
             npx -p semantic-release-ado semantic-release
-          workingDirectory: "Creator/"
+          workingDirectory: "Creator-Base-Template/"
         env:
           GH_TOKEN: "$(GITHUB_TOKEN)"
 
@@ -106,7 +106,7 @@ stages:
             if(!$TAG) { $TAG = "v0.0.0" }
             $TAG = $TAG.TrimStart("v") + "-" + (git log -1 --pretty=format:%h)
             Write-Host "##vso[task.setvariable variable=Version]$TAG"
-          workingDirectory: "Creator/"
+          workingDirectory: "Creator-Base-Template/"
 
       - task: CopyFiles@2
         inputs:
