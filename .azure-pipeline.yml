@@ -87,7 +87,7 @@ stages:
 
       - task: PowerShell@2
         displayName: "Run Semantic release"
-        condition: eq(variables['Build.SourceBranchName'], 'master')
+        condition: ne(variables['Build.SourceBranchName'], 'master')
         inputs:
           targetType: 'inline'
           script: |
