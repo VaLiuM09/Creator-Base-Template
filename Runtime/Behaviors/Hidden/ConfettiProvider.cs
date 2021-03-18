@@ -66,7 +66,7 @@ public class ConfettiProvider : MonoBehaviour
 
             if (season.EndDate != null)
             {
-                if ((now > season.StartDate) && (now < season.EndDate))
+                if (now >= season.StartDate && now <= season.EndDate)
                 {
                     return season;
                 }
