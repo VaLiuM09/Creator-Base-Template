@@ -5,7 +5,7 @@ public class ConfettiProvider : MonoBehaviour
 {
     public const string DefaultConfettiPrefabPath = "Prefabs/InnoactiveConfettiMachine";
     
-    public static readonly Season[] Seasons = new[]
+    private static readonly Season[] Seasons = new[]
     {
         new Season("Valentines Day", "", new DateTime(DateTime.Today.Year, 2, 14)),
         new Season("St. Patrick's Day", "Prefabs/StPatricksDayConfettiMachine", new DateTime(DateTime.Today.Year, 3, 17)),
@@ -13,7 +13,7 @@ public class ConfettiProvider : MonoBehaviour
         new Season("Halloween", "", new DateTime(DateTime.Today.Year, 10, 30))
     };
 
-    public class Season
+    private class Season
     {
         public string Name { get; }
         public string PathToConfetti { get; }
