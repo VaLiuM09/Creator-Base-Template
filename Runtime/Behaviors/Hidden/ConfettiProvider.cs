@@ -7,7 +7,7 @@ public static class ConfettiProvider
     
     private static readonly Season[] Seasons =
     {
-        new Season("Valentines Day", "Confetti/Hidden/Prefabs/ValentinesDayConfettiMachine", new DateTime(DateTime.Today.Year, 2, 14)),
+        new Season("Valentines Day", "Confetti/Hidden/Prefabs/ValentinesDayConfettiMachine", new DateTime(DateTime.Today.Year, 3, 18)),
         new Season("St. Patrick's Day", "Confetti/Hidden/Prefabs/StPatricksDayConfettiMachine", new DateTime(DateTime.Today.Year, 3, 17)),
         new Season("Christmas", "Confetti/Hidden/Prefabs/XmasConfettiMachine", new DateTime(DateTime.Today.Year, 12, 12), new DateTime(DateTime.Today.Year, 12, 25)),
         new Season("Halloween", "Confetti/Hidden/Prefabs/HalloweenConfettiMachine", new DateTime(DateTime.Today.Year, 10, 31))
