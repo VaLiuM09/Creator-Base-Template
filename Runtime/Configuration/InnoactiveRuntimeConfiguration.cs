@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Innoactive.Creator.Core.Behaviors;
-using Innoactive.Creator.Core.Configuration;
-using Innoactive.Creator.Core.Configuration.Modes;
+using VPG.Creator.Core.Behaviors;
+using VPG.Creator.Core.Configuration;
+using VPG.Creator.Core.Configuration.Modes;
 
-namespace Innoactive.Creator.BaseTemplate.Configuration
+namespace VPG.Creator.BaseTemplate.Configuration
 {
     public class InnoactiveRuntimeConfiguration : DefaultRuntimeConfiguration
     {

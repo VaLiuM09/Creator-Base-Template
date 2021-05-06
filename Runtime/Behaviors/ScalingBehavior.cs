@@ -2,13 +2,13 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Runtime.Serialization;
-using Innoactive.Creator.Core;
-using Innoactive.Creator.Core.Behaviors;
-using Innoactive.Creator.Core.Attributes;
-using Innoactive.Creator.Core.SceneObjects;
-using Innoactive.Creator.Core.Validation;
+using VPG.Creator.Core;
+using VPG.Creator.Core.Behaviors;
+using VPG.Creator.Core.Attributes;
+using VPG.Creator.Core.SceneObjects;
+using VPG.Creator.Core.Validation;
 
-namespace Innoactive.Creator.BaseTemplate.Behaviors
+namespace VPG.Creator.BaseTemplate.Behaviors
 {
     // This behavior linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
     [DataContract(IsReference = true)]

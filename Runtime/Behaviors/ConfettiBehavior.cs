@@ -2,16 +2,16 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Runtime.Serialization;
-using Innoactive.Creator.Core;
-using Innoactive.Creator.Core.Utils;
-using Innoactive.Creator.Core.Behaviors;
-using Innoactive.Creator.Core.Attributes;
-using Innoactive.Creator.Core.SceneObjects;
-using Innoactive.Creator.Core.Configuration;
-using Innoactive.Creator.Core.Validation;
+using VPG.Creator.Core;
+using VPG.Creator.Core.Utils;
+using VPG.Creator.Core.Behaviors;
+using VPG.Creator.Core.Attributes;
+using VPG.Creator.Core.SceneObjects;
+using VPG.Creator.Core.Configuration;
+using VPG.Creator.Core.Validation;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Creator.BaseTemplate.Behaviors
+namespace VPG.Creator.BaseTemplate.Behaviors
 {
     /// <summary>
     /// This behavior causes confetti to rain.

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Innoactive.Creator.Core;
-using Innoactive.Creator.Core.Configuration;
+using VPG.Creator.Core;
+using VPG.Creator.Core.Configuration;
 
-namespace Innoactive.Creator.BaseTemplate
+namespace VPG.Creator.BaseTemplate
 {
     /// <summary>
     /// Loads and starts the training course currently selected in the '[TRAINING_CONFIGURATION]' gameObject.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Innoactive.CreatorEditor.PackageManager.BasicTemplate
+namespace VPG.CreatorEditor.PackageManager.BasicTemplate
 {
     /// <summary>
     /// Adds Unity's Text Mesh Pro package as a dependency and prompts the 'TMP Importer' window if the 'TMP Essentials' are missing in the project.

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Innoactive.Creator.Core.Behaviors;
-using Innoactive.Creator.TextToSpeech.Audio;
-using Innoactive.Creator.Core.Internationalization;
-using Innoactive.CreatorEditor.UI.StepInspector.Menu;
+using VPG.Creator.Core.Behaviors;
+using VPG.Creator.TextToSpeech.Audio;
+using VPG.Creator.Core.Internationalization;
+using VPG.CreatorEditor.UI.StepInspector.Menu;
 
-namespace Innoactive.CreatorEditor.BaseTemplate.UI.Behaviors
+namespace VPG.CreatorEditor.BaseTemplate.UI.Behaviors
 {
     public class AudioHintMenuItem : MenuItem<IBehavior>
     {
