@@ -5,9 +5,9 @@ using VPG.Creator.Core.Configuration.Modes;
 
 namespace VPG.Creator.BaseTemplate.Configuration
 {
-    public class InnoactiveRuntimeConfiguration : DefaultRuntimeConfiguration
+    public class NoHintsRuntimeConfiguration : DefaultRuntimeConfiguration
     {
-        protected InnoactiveRuntimeConfiguration()
+        protected NoHintsRuntimeConfiguration()
         {
             IMode noHints = new Mode("No Audio Hints", new WhitelistTypeRule<IOptional>().Add<PlayAudioBehavior>());
             Modes = new BaseModeHandler(new List<IMode> { DefaultMode, noHints });

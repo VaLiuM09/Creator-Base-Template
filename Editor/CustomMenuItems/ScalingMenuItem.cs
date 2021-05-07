@@ -7,7 +7,7 @@ namespace VPG.CreatorEditor.BaseTemplate.UI.Behaviors
     public class ScalingMenuItem : MenuItem<IBehavior>
     {
         /// <inheritdoc />
-        public override string DisplayedName { get; } = "Innoactive/Scale Object";
+        public override string DisplayedName { get; } = "VPG/Scale Object";
 
         /// <inheritdoc />
         public override IBehavior GetNewItem()

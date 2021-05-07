@@ -9,7 +9,7 @@ namespace VPG.CreatorEditor.BaseTemplate.UI.Behaviors
     public class AudioHintMenuItem : MenuItem<IBehavior>
     {
         /// <inheritdoc />
-        public override string DisplayedName { get; } = "Innoactive/Audio Hint";
+        public override string DisplayedName { get; } = "VPG/Audio Hint";
 
         /// <inheritdoc />
         public override IBehavior GetNewItem()

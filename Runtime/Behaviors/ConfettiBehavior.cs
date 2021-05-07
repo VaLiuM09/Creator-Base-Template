@@ -75,7 +75,7 @@ namespace VPG.Creator.BaseTemplate.Behaviors
         }
 
         private const float defaultDuration = 15f;
-        private const string defaultPathConfettiPrefab = "Confetti/Prefabs/InnoactiveConfettiMachine";
+        private const string defaultPathConfettiPrefab = "Confetti/Prefabs/RandomConfettiMachine";
         private const float defaultRadius = 1f;
         private const float distanceAboveTrainee = 3f;
 

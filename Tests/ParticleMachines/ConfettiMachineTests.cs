@@ -10,7 +10,7 @@ namespace VPG.Creator.BaseTemplate.Tests.ParticleMachine
 {
     public class ConfettiMachineTests : RuntimeTests
     {
-        private const string pathToDefaultPrefab = "Confetti/Prefabs/InnoactiveConfettiMachine";
+        private const string pathToDefaultPrefab = "Confetti/Prefabs/RandomConfettiMachine";
 
         [UnityTest]
         public IEnumerator InstantiateDefaultPrefab()

@@ -16,7 +16,7 @@ namespace VPG.Creator.BaseTemplate.Tests.Behaviors
 {
     public class ConfettiBehaviorTests : RuntimeTests
     {
-        private const string pathToPrefab = "Confetti/Prefabs/InnoactiveConfettiMachine";
+        private const string pathToPrefab = "Confetti/Prefabs/RandomConfettiMachine";
         private const string pathToMockPrefab = "Confetti/Prefabs/MockConfettiMachine";
         private const string positionProviderName = "Target Position";
         private const float duration = 0.2f;

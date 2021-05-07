@@ -7,7 +7,7 @@ namespace VPG.CreatorEditor.BaseTemplate.UI.Behaviors
     public class ConfettiMenuItem : MenuItem<IBehavior>
     {
         /// <inheritdoc />
-        public override string DisplayedName { get; } = "Innoactive/Spawn Confetti";
+        public override string DisplayedName { get; } = "VPG/Spawn Confetti";
 
         /// <inheritdoc />
         public override IBehavior GetNewItem()
