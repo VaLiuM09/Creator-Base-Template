@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-using Innoactive.Creator.Core.Configuration;
+using VPG.Creator.Core.Configuration;
 
-namespace Innoactive.Creator.BaseTemplate
+namespace VPG.Creator.BaseTemplate
 {
     /// <summary>
     /// Puts the parent GameObject to the same position and rotation of the trainee camera.

@@ -1,13 +1,13 @@
-﻿using Innoactive.Creator.Core.Behaviors;
-using Innoactive.Creator.BaseTemplate.Behaviors;
-using Innoactive.CreatorEditor.UI.StepInspector.Menu;
+﻿using VPG.Creator.Core.Behaviors;
+using VPG.Creator.BaseTemplate.Behaviors;
+using VPG.CreatorEditor.UI.StepInspector.Menu;
 
-namespace Innoactive.CreatorEditor.BaseTemplate.UI.Behaviors
+namespace VPG.CreatorEditor.BaseTemplate.UI.Behaviors
 {
     public class ConfettiMenuItem : MenuItem<IBehavior>
     {
         /// <inheritdoc />
-        public override string DisplayedName { get; } = "Innoactive/Spawn Confetti";
+        public override string DisplayedName { get; } = "VPG/Spawn Confetti";
 
         /// <inheritdoc />
         public override IBehavior GetNewItem()
