@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using VPG.Creator.Core.Behaviors;
-using VPG.Creator.Core.Configuration;
-using VPG.Creator.Core.Configuration.Modes;
+using VPG.Core.Behaviors;
+using VPG.Core.Configuration;
+using VPG.Core.Configuration.Modes;
 
-namespace VPG.Creator.BaseTemplate.Configuration
+namespace VPG.BaseTemplate.Configuration
 {
     public class NoHintsRuntimeConfiguration : DefaultRuntimeConfiguration
     {
