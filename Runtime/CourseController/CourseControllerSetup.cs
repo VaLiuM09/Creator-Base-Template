@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using UnityEngine;
 
-namespace VPG.Creator.BaseTemplate
+namespace VPG.BaseTemplate
 {
     /// <summary>
     /// Allows to select a desired CourseController.

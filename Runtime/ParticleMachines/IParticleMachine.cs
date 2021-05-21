@@ -1,4 +1,4 @@
-﻿namespace VPG.Creator.BaseTemplate
+﻿namespace VPG.BaseTemplate
 {
     public interface IParticleMachine
     {

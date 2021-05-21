@@ -2,13 +2,13 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Runtime.Serialization;
-using VPG.Creator.Core;
-using VPG.Creator.Core.Behaviors;
-using VPG.Creator.Core.Attributes;
-using VPG.Creator.Core.SceneObjects;
-using VPG.Creator.Core.Validation;
+using VPG.Core;
+using VPG.Core.Behaviors;
+using VPG.Core.Attributes;
+using VPG.Core.SceneObjects;
+using VPG.Core.Validation;
 
-namespace VPG.Creator.BaseTemplate.Behaviors
+namespace VPG.BaseTemplate.Behaviors
 {
     // This behavior linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
     [DataContract(IsReference = true)]

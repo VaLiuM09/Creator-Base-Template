@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace VPG.Creator.BaseTemplate
+namespace VPG.BaseTemplate
 {
     /// <summary>
     /// Manager of all listed particle systems using confetti as particles.

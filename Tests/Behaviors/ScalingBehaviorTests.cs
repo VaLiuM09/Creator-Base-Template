@@ -1,15 +1,15 @@
 using System.Collections;
-using VPG.Creator.BaseTemplate.Behaviors;
-using VPG.Creator.Core;
-using VPG.Creator.Core.Behaviors;
-using VPG.Creator.Core.Configuration.Modes;
-using VPG.Creator.Core.SceneObjects;
-using VPG.Creator.Tests.Utils;
+using VPG.BaseTemplate.Behaviors;
+using VPG.Core;
+using VPG.Core.Behaviors;
+using VPG.Core.Configuration.Modes;
+using VPG.Core.SceneObjects;
+using VPG.Tests.Utils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace VPG.Creator.BaseTemplate.Tests.Behaviors
+namespace VPG.BaseTemplate.Tests.Behaviors
 {
     public class ScalingBehaviorTests : RuntimeTests
     {

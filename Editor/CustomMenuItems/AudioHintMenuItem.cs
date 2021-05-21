@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using VPG.Creator.Core.Behaviors;
-using VPG.Creator.TextToSpeech.Audio;
-using VPG.Creator.Core.Internationalization;
-using VPG.CreatorEditor.UI.StepInspector.Menu;
+using VPG.Core.Behaviors;
+using VPG.TextToSpeech.Audio;
+using VPG.Core.Internationalization;
+using VPG.Editor.UI.StepInspector.Menu;
 
-namespace VPG.CreatorEditor.BaseTemplate.UI.Behaviors
+namespace VPG.Editor.BaseTemplate.UI.Behaviors
 {
     public class AudioHintMenuItem : MenuItem<IBehavior>
     {
